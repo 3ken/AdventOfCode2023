@@ -32,18 +32,18 @@ int Second()
     foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day01\Data.txt"))
     {
         if (string.IsNullOrEmpty(line)) continue;
-        var firstInt = "";
-        var lastInt = "";
-        var regexmatches = regex.Matches(line);
+        string firstInt;
+        string lastInt;
+        var regexMatches = regex.Matches(line);
         var stringMatches = GetIndexOfStringNumber(line);
 
-        if (regexmatches.First().Index < stringMatches.First().Item1)
-            firstInt = regexmatches.First().Value;
+        if (regexMatches.First().Index < stringMatches.First().Item1)
+            firstInt = regexMatches.First().Value;
         else
             firstInt = stringMatches.First().Item2.ToString();
 
-        if (regexmatches.Last().Index > stringMatches.Last().Item1)
-            lastInt = regexmatches.Last().Value;
+        if (regexMatches.Last().Index > stringMatches.Last().Item1)
+            lastInt = regexMatches.Last().Value;
         else
             lastInt = stringMatches.Last().Item2.ToString();
 
@@ -53,7 +53,7 @@ int Second()
     return ints.Sum();
 }
 
-List<(int?, int?)> GetIndexOfStringNumber(string line)
+List<(int, int)> GetIndexOfStringNumber(string line)
 {
     var lowestIndex = int.MaxValue;
     int lowestIndexValue = default;
@@ -76,7 +76,7 @@ List<(int?, int?)> GetIndexOfStringNumber(string line)
         }
     }
 
-    return new List<(int?, int?)> { (lowestIndex, lowestIndexValue), (highestIndex, highestIndexValue) };
+    return new List<(int, int)> { (lowestIndex, lowestIndexValue), (highestIndex, highestIndexValue) };
 }
 
 internal enum Number
