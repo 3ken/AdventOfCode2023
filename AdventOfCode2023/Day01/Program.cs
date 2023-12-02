@@ -1,15 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 
-var numbers = new List<Number> { Number.One, Number.Two, Number.Three, Number.Four, Number.Five, Number.Six, Number.Seven, Number.Eight, Number.Nine };
-var first = First();
-var second = Second();
-
-Console.WriteLine(first);
-Console.WriteLine(second);
-Console.ReadLine();
+First();
+Second();
 return;
 
-int First()
+void First()
 {
     var regex = new Regex(@"\d");
     var ints = new List<int>();
@@ -21,10 +16,10 @@ int First()
         ints.Add(int.Parse(matches.First().Value + matches.Last().Value));
     }
 
-    return ints.Sum();
+    Console.WriteLine(ints.Sum());
 }
 
-int Second()
+void Second()
 {
     var regex = new Regex(@"\d");
     var ints = new List<int>();
@@ -32,25 +27,21 @@ int Second()
     foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day01\Data.txt"))
     {
         if (string.IsNullOrEmpty(line)) continue;
-        string firstInt;
-        string lastInt;
         var regexMatches = regex.Matches(line);
         var stringMatches = GetIndexOfStringNumber(line);
 
-        if (regexMatches.First().Index < stringMatches.First().Item1)
-            firstInt = regexMatches.First().Value;
-        else
-            firstInt = stringMatches.First().Item2.ToString();
+        var firstInt = regexMatches.First().Index < stringMatches.First().Item1 
+            ? regexMatches.First().Value 
+            : stringMatches.First().Item2.ToString();
 
-        if (regexMatches.Last().Index > stringMatches.Last().Item1)
-            lastInt = regexMatches.Last().Value;
-        else
-            lastInt = stringMatches.Last().Item2.ToString();
+        var lastInt = regexMatches.Last().Index > stringMatches.Last().Item1 
+            ? regexMatches.Last().Value 
+            : stringMatches.Last().Item2.ToString();
 
         ints.Add(int.Parse(firstInt + lastInt));
     }
 
-    return ints.Sum();
+    Console.WriteLine(ints.Sum());
 }
 
 List<(int, int)> GetIndexOfStringNumber(string line)
@@ -59,7 +50,7 @@ List<(int, int)> GetIndexOfStringNumber(string line)
     int lowestIndexValue = default;
     var highestIndex = int.MinValue;
     int highestIndexValue = default;
-    foreach (var number in numbers)
+    foreach (var number in new List<Number> { Number.One, Number.Two, Number.Three, Number.Four, Number.Five, Number.Six, Number.Seven, Number.Eight, Number.Nine })
     {
         var firstIndex = line.IndexOf(number.ToString(), StringComparison.InvariantCultureIgnoreCase);
         var lastIndex = line.LastIndexOf(number.ToString(), StringComparison.InvariantCultureIgnoreCase);
