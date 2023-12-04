@@ -54,7 +54,6 @@ void Second()
             wonCards[cardNumber + x] += quantityOfCard;
         }
     }
-    
 
     Console.WriteLine(wonCards.Sum(a => a.Value));
 }
