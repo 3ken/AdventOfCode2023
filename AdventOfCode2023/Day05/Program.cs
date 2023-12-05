@@ -23,7 +23,22 @@ void First()
 
 void Second()
 {
-   
+    long? lowestLocationNumber = null;
+    foreach (var range in seedToLocationData.Seeds.Chunk(2).Select(seedPair => new Range(start: seedPair[0], end: seedPair[0] + seedPair[1] - 1)))
+    {
+        for (var i = range.Start; i <= range.End ; i++)
+        {
+            Console.WriteLine($"i: {i} lowestLocationNumber: {lowestLocationNumber}");
+            var dest = i;
+            foreach (var map in seedToLocationData.Maps)
+            {
+                dest = MapToDestination(dest, map);
+            }
+            if (dest < lowestLocationNumber || lowestLocationNumber == null) lowestLocationNumber = dest;
+        }
+    }
+    
+    Console.WriteLine(lowestLocationNumber);
 }
 
 long MapToDestination(long source, List<SourceToDestination> sourceToDestinations)
@@ -80,5 +95,34 @@ public record SourceToDestination
         SourceRangeEnd = long.Parse(sourceRangeStart) + long.Parse(range) - 1;
         DestinationRangeStart = long.Parse(destinationRangeStart);
         Range = long.Parse(range);
+    }
+}
+
+public readonly struct Range
+{
+    public long Start { get; }
+    public long End { get; }
+    
+    public Range(long start, long end)
+    {
+        Start = start;
+        End = end;
+    }
+
+    public static bool Contains(Range a, Range b)
+    {
+        return a.Start <= b.Start && a.End >= b.End;
+    }
+    
+    public static bool Overlaps(Range a, Range b, out Range overlap)
+    {
+        var check = a.Start <= b.End && a.End >= b.Start;
+        var limits = new[] { a.Start, a.End, b.Start, b.End }.Order().ToList();
+
+        overlap = check
+            ? new Range(start: limits[1], end: limits[2])
+            : default;
+        
+        return check;
     }
 }
