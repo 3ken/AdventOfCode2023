@@ -25,10 +25,10 @@ void First()
         }
 
         if (numberOfWinningNumbers == 0) number = 0;
-        
+
         numbersToSum.Add(number);
     }
-    
+
     Console.WriteLine(numbersToSum.Sum());
 }
 

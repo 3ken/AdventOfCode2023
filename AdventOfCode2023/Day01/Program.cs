@@ -30,12 +30,12 @@ void Second()
         var regexMatches = regex.Matches(line);
         var stringMatches = GetIndexOfStringNumber(line);
 
-        var firstInt = regexMatches.First().Index < stringMatches.First().Item1 
-            ? regexMatches.First().Value 
+        var firstInt = regexMatches.First().Index < stringMatches.First().Item1
+            ? regexMatches.First().Value
             : stringMatches.First().Item2.ToString();
 
-        var lastInt = regexMatches.Last().Index > stringMatches.Last().Item1 
-            ? regexMatches.Last().Value 
+        var lastInt = regexMatches.Last().Index > stringMatches.Last().Item1
+            ? regexMatches.Last().Value
             : stringMatches.Last().Item2.ToString();
 
         ints.Add(int.Parse(firstInt + lastInt));
@@ -60,6 +60,7 @@ List<(int, int)> GetIndexOfStringNumber(string line)
             lowestIndex = firstIndex;
             lowestIndexValue = (int)number;
         }
+
         if (lastIndex != -1 && lastIndex > highestIndex)
         {
             highestIndex = lastIndex;

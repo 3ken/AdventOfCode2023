@@ -1,5 +1,4 @@
-﻿
-var matrix = CreateCharMatrix();
+﻿var matrix = CreateCharMatrix();
 var rows = matrix.GetLength(0) - 1;
 var cols = matrix.GetLength(1) - 1;
 First();
@@ -26,6 +25,7 @@ void First()
                     isANumber = false;
                     continue;
                 }
+
                 var nextCell = matrix[rowIndex, columnIndex + numberLenght];
                 if (char.IsDigit(nextCell))
                 {
@@ -47,7 +47,7 @@ void First()
             columnIndex += wholeNumber.Length - 1;
         }
     }
-    
+
     Console.WriteLine(numbersToAdd.Sum());
 }
 
@@ -63,7 +63,7 @@ void Second()
             numbersToAdd.Add(GetGearRatio(rowIndex, columnIndex));
         }
     }
-    
+
     Console.WriteLine(numbersToAdd.Sum());
 }
 
@@ -103,10 +103,10 @@ char[,] CreateCharMatrix()
 
 bool CheckIfAdjacentSymbolExists(int rowIndex, int columnIndex)
 {
-    return GotAdjacentSymbolRight(rowIndex, columnIndex) 
-           || GotAdjacentSymbolLeft(rowIndex, columnIndex) 
-           || GotAdjacentSymbolTop(rowIndex, columnIndex) 
-           || GotAdjacentSymbolBottom(rowIndex, columnIndex) ;
+    return GotAdjacentSymbolRight(rowIndex, columnIndex)
+           || GotAdjacentSymbolLeft(rowIndex, columnIndex)
+           || GotAdjacentSymbolTop(rowIndex, columnIndex)
+           || GotAdjacentSymbolBottom(rowIndex, columnIndex);
 }
 
 bool GotAdjacentSymbolLeft(int rowIndex, int columnIndex)
@@ -148,6 +148,7 @@ bool GotAdjacentSymbolRight(int rowIndex, int columnIndex)
             {
                 return true;
             }
+
             if (IsAdjacentSymbol(rowIndex, columnIndex + 1))
             {
                 return true;
@@ -169,7 +170,7 @@ bool GotAdjacentSymbolRight(int rowIndex, int columnIndex)
 bool GotAdjacentSymbolTop(int rowIndex, int columnIndex)
 {
     {
-        return rowIndex > 0 && IsAdjacentSymbol(rowIndex -1, columnIndex);
+        return rowIndex > 0 && IsAdjacentSymbol(rowIndex - 1, columnIndex);
     }
 }
 
@@ -185,103 +186,107 @@ bool IsAdjacentSymbol(int rowIndex, int columnIndex)
 
 int[] GetNumbersTop(int rowIndex, int columnIndex)
 {
-    if ((TopLeftIsANumber(rowIndex, columnIndex) && 
-        TopIsANumber(rowIndex, columnIndex) && 
-        TopRightIsANumber(rowIndex, columnIndex)) || 
-        (TopLeftIsANumber(rowIndex, columnIndex) &&  
-         !TopIsANumber(rowIndex, columnIndex) && 
-         !TopRightIsANumber(rowIndex, columnIndex)) || 
-        (TopLeftIsANumber(rowIndex, columnIndex) &&  
-         TopIsANumber(rowIndex, columnIndex) && 
+    if ((TopLeftIsANumber(rowIndex, columnIndex) &&
+         TopIsANumber(rowIndex, columnIndex) &&
+         TopRightIsANumber(rowIndex, columnIndex)) ||
+        (TopLeftIsANumber(rowIndex, columnIndex) &&
+         !TopIsANumber(rowIndex, columnIndex) &&
+         !TopRightIsANumber(rowIndex, columnIndex)) ||
+        (TopLeftIsANumber(rowIndex, columnIndex) &&
+         TopIsANumber(rowIndex, columnIndex) &&
          !TopRightIsANumber(rowIndex, columnIndex)))
     {
         return new[] { int.Parse(GetWholeNumber(rowIndex - 1, columnIndex - 1)) };
     }
-    
-    if ((!TopLeftIsANumber(rowIndex, columnIndex) && 
-         TopIsANumber(rowIndex, columnIndex) && 
-         TopRightIsANumber(rowIndex, columnIndex)) || 
-        (!TopLeftIsANumber(rowIndex, columnIndex) &&  
-         TopIsANumber(rowIndex, columnIndex) && 
+
+    if ((!TopLeftIsANumber(rowIndex, columnIndex) &&
+         TopIsANumber(rowIndex, columnIndex) &&
+         TopRightIsANumber(rowIndex, columnIndex)) ||
+        (!TopLeftIsANumber(rowIndex, columnIndex) &&
+         TopIsANumber(rowIndex, columnIndex) &&
          !TopRightIsANumber(rowIndex, columnIndex)))
     {
         return new[] { int.Parse(GetWholeNumber(rowIndex - 1, columnIndex)) };
     }
-    
-    if (TopLeftIsANumber(rowIndex, columnIndex) && 
-        !TopIsANumber(rowIndex, columnIndex) && 
+
+    if (TopLeftIsANumber(rowIndex, columnIndex) &&
+        !TopIsANumber(rowIndex, columnIndex) &&
         TopRightIsANumber(rowIndex, columnIndex))
     {
-        return new[] { 
-            int.Parse(GetWholeNumber(rowIndex - 1, columnIndex - 1)), 
-            int.Parse(GetWholeNumber(rowIndex - 1, columnIndex + 1)) };
+        return new[]
+        {
+            int.Parse(GetWholeNumber(rowIndex - 1, columnIndex - 1)),
+            int.Parse(GetWholeNumber(rowIndex - 1, columnIndex + 1))
+        };
     }
-    
-    if (!TopLeftIsANumber(rowIndex, columnIndex) && 
-        !TopIsANumber(rowIndex, columnIndex) && 
+
+    if (!TopLeftIsANumber(rowIndex, columnIndex) &&
+        !TopIsANumber(rowIndex, columnIndex) &&
         TopRightIsANumber(rowIndex, columnIndex))
     {
         return new[] { int.Parse(GetWholeNumber(rowIndex - 1, columnIndex + 1)) };
     }
 
-    return new int[] {  };
+    return Array.Empty<int>();
 }
 
 int[] GetNumbersBottom(int rowIndex, int columnIndex)
 {
-    if ((BottomLeftIsANumber(rowIndex, columnIndex) && 
-         BottomIsANumber(rowIndex, columnIndex) && 
-         BottomRightIsANumber(rowIndex, columnIndex)) || 
-        (BottomLeftIsANumber(rowIndex, columnIndex) &&  
-         !BottomIsANumber(rowIndex, columnIndex) && 
-         !BottomRightIsANumber(rowIndex, columnIndex)) || 
-        (BottomLeftIsANumber(rowIndex, columnIndex) &&  
-         BottomIsANumber(rowIndex, columnIndex) && 
+    if ((BottomLeftIsANumber(rowIndex, columnIndex) &&
+         BottomIsANumber(rowIndex, columnIndex) &&
+         BottomRightIsANumber(rowIndex, columnIndex)) ||
+        (BottomLeftIsANumber(rowIndex, columnIndex) &&
+         !BottomIsANumber(rowIndex, columnIndex) &&
+         !BottomRightIsANumber(rowIndex, columnIndex)) ||
+        (BottomLeftIsANumber(rowIndex, columnIndex) &&
+         BottomIsANumber(rowIndex, columnIndex) &&
          !BottomRightIsANumber(rowIndex, columnIndex)))
     {
         return new[] { int.Parse(GetWholeNumber(rowIndex + 1, columnIndex - 1)) };
     }
-    
-    if ((!BottomLeftIsANumber(rowIndex, columnIndex) && 
-         BottomIsANumber(rowIndex, columnIndex) && 
-         BottomRightIsANumber(rowIndex, columnIndex)) || 
-        (!BottomLeftIsANumber(rowIndex, columnIndex) &&  
-         BottomIsANumber(rowIndex, columnIndex) && 
+
+    if ((!BottomLeftIsANumber(rowIndex, columnIndex) &&
+         BottomIsANumber(rowIndex, columnIndex) &&
+         BottomRightIsANumber(rowIndex, columnIndex)) ||
+        (!BottomLeftIsANumber(rowIndex, columnIndex) &&
+         BottomIsANumber(rowIndex, columnIndex) &&
          !BottomRightIsANumber(rowIndex, columnIndex)))
     {
         return new[] { int.Parse(GetWholeNumber(rowIndex + 1, columnIndex)) };
     }
-    
-    if (BottomLeftIsANumber(rowIndex, columnIndex) && 
-        !BottomIsANumber(rowIndex, columnIndex) && 
+
+    if (BottomLeftIsANumber(rowIndex, columnIndex) &&
+        !BottomIsANumber(rowIndex, columnIndex) &&
         BottomRightIsANumber(rowIndex, columnIndex))
     {
-        return new[] { 
-            int.Parse(GetWholeNumber(rowIndex + 1, columnIndex - 1)), 
-            int.Parse(GetWholeNumber(rowIndex + 1, columnIndex + 1)) };
+        return new[]
+        {
+            int.Parse(GetWholeNumber(rowIndex + 1, columnIndex - 1)),
+            int.Parse(GetWholeNumber(rowIndex + 1, columnIndex + 1))
+        };
     }
-    
-    if (!BottomLeftIsANumber(rowIndex, columnIndex) && 
-        !BottomIsANumber(rowIndex, columnIndex) && 
+
+    if (!BottomLeftIsANumber(rowIndex, columnIndex) &&
+        !BottomIsANumber(rowIndex, columnIndex) &&
         BottomRightIsANumber(rowIndex, columnIndex))
     {
         return new[] { int.Parse(GetWholeNumber(rowIndex + 1, columnIndex + 1)) };
     }
-    
-    return new int[] {  };
+
+    return Array.Empty<int>();
 }
 
 int[] GetNumberRight(int rowIndex, int columnIndex)
 {
-    return RightIsANumber(rowIndex, columnIndex) 
-        ? new[] { int.Parse(GetWholeNumber(rowIndex, columnIndex + 1)) } 
-        : new int[] {  };
+    return RightIsANumber(rowIndex, columnIndex)
+        ? new[] { int.Parse(GetWholeNumber(rowIndex, columnIndex + 1)) }
+        : Array.Empty<int>();
 }
 
 int[] GetNumberLeft(int rowIndex, int columnIndex)
 {
-    return LeftIsANumber(rowIndex, columnIndex) 
-        ? new[] { int.Parse(GetWholeNumber(rowIndex, columnIndex - 1)) } 
+    return LeftIsANumber(rowIndex, columnIndex)
+        ? new[] { int.Parse(GetWholeNumber(rowIndex, columnIndex - 1)) }
         : Array.Empty<int>();
 }
 
@@ -301,6 +306,7 @@ string GetWholeNumber(int rowIndex, int columnIndex)
             length = 1;
             continue;
         }
+
         if (char.IsDigit(matrix[rowIndex, columnIndex - length]))
         {
             length++;
@@ -322,6 +328,7 @@ string GetWholeNumber(int rowIndex, int columnIndex)
             isANumber = false;
             continue;
         }
+
         if (char.IsDigit(matrix[rowIndex, startIndex + length]))
         {
             length++;
@@ -337,7 +344,7 @@ string GetWholeNumber(int rowIndex, int columnIndex)
     {
         numberToReturn += matrix[rowIndex, i];
     }
-    
+
     return numberToReturn;
 }
 

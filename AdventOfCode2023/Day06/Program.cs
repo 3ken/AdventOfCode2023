@@ -2,8 +2,7 @@
 
 var lines = File.ReadAllLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day06\Data.txt");
 var regex = new Regex(@"\d+");
-var races1 = GetRacesData();
-var races2 = GetRacesData2();
+var races = GetRacesData();
 
 First();
 Second();
@@ -12,7 +11,7 @@ return;
 void First()
 {
     var totalWaysOfWinning = new List<int>();
-    foreach (var race in races1)
+    foreach (var race in races)
     {
         var waysOfWinningRace = 0;
         for (var i = 0; i < race.Duration - 1; i++)
@@ -76,20 +75,12 @@ List<Race> GetRacesData()
     return racesToReturn;
 }
 
-public readonly struct Race
+public readonly struct Race(long duration, long record)
 {
-    public long Duration { get; }
-    public long Record { get; }
+    public long Duration { get; } = duration;
+    public long Record { get; } = record;
 
-    public Race(long duration, long record)
+    public Race(string duration, string record) : this(long.Parse(duration), long.Parse(record))
     {
-        Duration = duration;
-        Record = record;
-    }
-
-    public Race(string duration, string record)
-    {
-        Duration = long.Parse(duration);
-        Record = long.Parse(record);
     }
 }
