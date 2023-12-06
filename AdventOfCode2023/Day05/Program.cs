@@ -1,14 +1,14 @@
 ﻿var lines = File.ReadAllLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day05\Data.txt");
 var seedToLocationData = GetSeedToLocationData();
 
-First();
+// First();
 Second();
 return;
 
 void First()
 {
     var lowestLocationNumber = long.MaxValue;
-    foreach (var seed in seedToLocationData.Seeds)
+    foreach (var seed in seedToLocationData!.Seeds)
     {
         var dest = seed;
         foreach (var map in seedToLocationData.Maps)
@@ -17,57 +17,76 @@ void First()
         }
         if (dest < lowestLocationNumber) lowestLocationNumber = dest;
     }
-    
+
     Console.WriteLine(lowestLocationNumber);
 }
 
 void Second()
 {
     long? lowestLocationNumber = null;
-    foreach (var range in seedToLocationData.Seeds.Chunk(2).Select(seedPair => new Range(start: seedPair[0], end: seedPair[0] + seedPair[1] - 1)))
+    var seedRanges = seedToLocationData.Seeds.Chunk(2)
+        .Select(seedPair => new Range(seedPair[0], seedPair[1] - 1))
+        .ToList();
+    var locationRanges = seedToLocationData.Maps.Last()
+        .Select(locationPair => new Range(start: locationPair.DestinationRange.Start, end: locationPair.DestinationRange.End))
+        .OrderBy(r => r.Start)
+        .ToList();
+    for (var i = 0; i < locationRanges.Count; i++)
     {
-        for (var i = range.Start; i <= range.End ; i++)
+        for (var location = locationRanges[i].Start; location <= locationRanges[i].End; location++)
         {
-            Console.WriteLine($"i: {i} lowestLocationNumber: {lowestLocationNumber}");
-            var dest = i;
-            foreach (var map in seedToLocationData.Maps)
+            var source = location;
+            for (var j = seedToLocationData.Maps.Count - 1; j >= 0; j--)
             {
-                dest = MapToDestination(dest, map);
+                source = MapToSource(source, seedToLocationData.Maps[j]);
             }
-            if (dest < lowestLocationNumber || lowestLocationNumber == null) lowestLocationNumber = dest;
+            Console.WriteLine($"i: {i} location: {location} seed: {source}");
+            if (!seedRanges.Any(r => Range.Contains(r, source))) continue;
+            lowestLocationNumber = location;
+            break;
         }
+
+        if (lowestLocationNumber != null) break;
     }
-    
+
     Console.WriteLine(lowestLocationNumber);
 }
 
 long MapToDestination(long source, List<SourceToDestination> sourceToDestinations)
 {
-    var x = sourceToDestinations.FirstOrDefault(sd => sd.SourceRangeStart <= source && sd.SourceRangeEnd >= source);
+    var x = sourceToDestinations.FirstOrDefault(sd => Range.Contains(sd.SourceRange, source));
     if (x == null) return source;
 
-    return x.DestinationRangeStart + (source - x.SourceRangeStart);
+    return x.DestinationRange.Start + (source - x.SourceRange.Start);
+}
+
+long MapToSource(long destination, List<SourceToDestination> destinationToSource)
+{
+    var x = destinationToSource.FirstOrDefault(sd => Range.Contains(sd.DestinationRange, destination));
+    if (x == null) return destination;
+
+    return x.SourceRange.Start + (destination - x.DestinationRange.Start);
 }
 
 SeedToLocationData GetSeedToLocationData()
 {
     var data = new SeedToLocationData
     {
-        Seeds = lines.First(l => l.StartsWith("seeds: ")).Split(": ")[1].Split(' ').Select(long.Parse).ToArray()
+        Seeds = lines.First(l => l.StartsWith("seeds: ", StringComparison.Ordinal)).Split(": ")[1].Split(' ').Select(long.Parse).ToArray()
     };
 
     for (var i = 0; i < lines.Length; i++)
     {
-        if(string.IsNullOrEmpty(lines[i])) continue;
+        if (string.IsNullOrEmpty(lines[i])) continue;
         if (lines[i].Contains(" map:"))
         {
             var maps = new List<SourceToDestination>();
             while (!string.IsNullOrEmpty(lines[i + 1]))
             {
                 var ints = lines[i + 1].Split(' ');
-                maps.Add(new SourceToDestination(ints[1],ints[0],ints[2]));
+                maps.Add(new SourceToDestination(ints[1], ints[0], ints[2]));
                 i++;
-                if(i == lines.Length - 1) break;
+                if (i == lines.Length - 1) break;
             }
             data.Maps.Add(maps);
         }
@@ -84,45 +103,23 @@ public class SeedToLocationData
 
 public record SourceToDestination
 {
-    public long SourceRangeStart { get; }
-    public long SourceRangeEnd { get; }
-    public long DestinationRangeStart { get; }
-    public long Range { get; }
+    public Range SourceRange { get; }
+    public Range DestinationRange { get; }
 
     public SourceToDestination(string sourceRangeStart, string destinationRangeStart, string range)
     {
-        SourceRangeStart = long.Parse(sourceRangeStart);
-        SourceRangeEnd = long.Parse(sourceRangeStart) + long.Parse(range) - 1;
-        DestinationRangeStart = long.Parse(destinationRangeStart);
-        Range = long.Parse(range);
+        SourceRange = new Range(long.Parse(sourceRangeStart), long.Parse(sourceRangeStart) + long.Parse(range) - 1);
+        DestinationRange = new Range(long.Parse(destinationRangeStart), long.Parse(destinationRangeStart) + long.Parse(range) - 1);
     }
 }
 
-public readonly struct Range
+public readonly struct Range(long start, long end)
 {
-    public long Start { get; }
-    public long End { get; }
-    
-    public Range(long start, long end)
-    {
-        Start = start;
-        End = end;
-    }
+    public long Start { get; } = start;
+    public long End { get; } = end;
 
-    public static bool Contains(Range a, Range b)
+    public static bool Contains(Range range, long x)
     {
-        return a.Start <= b.Start && a.End >= b.End;
-    }
-    
-    public static bool Overlaps(Range a, Range b, out Range overlap)
-    {
-        var check = a.Start <= b.End && a.End >= b.Start;
-        var limits = new[] { a.Start, a.End, b.Start, b.End }.Order().ToList();
-
-        overlap = check
-            ? new Range(start: limits[1], end: limits[2])
-            : default;
-        
-        return check;
+        return range.Start <= x && range.End >= x;
     }
 }
