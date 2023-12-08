@@ -1,4 +1,5 @@
 ﻿var lines = File.ReadAllLines("Data.txt");
+// var lines = File.ReadAllLines("ExampleData.txt");
 
 First();
 Second();
@@ -68,15 +69,14 @@ public class Hand()
     {
         Cards = cards;
         Bid = bid;
-        IntCards = task == 1
-            ? GetIntCards(cards)
-            : GetIntCardsWithJoker(cards);
-        HandType = GetHandType(cards);
+        IntCards = GetIntCards(cards, task);
+        HandType = GetHandType(cards, task);
     }
 
-    private static int[] GetIntCards(IEnumerable<char> cards)
+    private static int[] GetIntCards(IEnumerable<char> cards, int task)
     {
         var toReturn = new List<int>();
+        var jInt = task == 1 ? 11 : 1;
         foreach (var card in cards)
         {
             switch (card)
@@ -91,7 +91,7 @@ public class Hand()
                     toReturn.Add(12);
                     break;
                 case 'J':
-                    toReturn.Add(11);
+                    toReturn.Add(jInt);
                     break;
                 case 'T':
                     toReturn.Add(10);
@@ -104,60 +104,40 @@ public class Hand()
 
         return toReturn.ToArray();
     }
-    private static int[] GetIntCardsWithJoker(IEnumerable<char> cards)
-    {
-        var toReturn = new List<int>();
-        foreach (var card in cards)
-        {
-            switch (card)
-            {
-                case 'A':
-                    toReturn.Add(14);
-                    break;
-                case 'K':
-                    toReturn.Add(13);
-                    break;
-                case 'Q':
-                    toReturn.Add(12);
-                    break;
-                case 'T':
-                    toReturn.Add(10);
-                    break;
-                case 'J':
-                    toReturn.Add(1);
-                    break;
-                default:
-                    toReturn.Add(int.Parse(card.ToString()));
-                    break;
-            }
-        }
 
-        return toReturn.ToArray();
-    }
-
-    private static HandType GetHandType(IReadOnlyList<char> cards)
+    private static HandType GetHandType(IReadOnlyList<char> cards, int task)
     {
-        if (FiveOfAKind(cards)) return HandType.FiveOfAKind;
-        if (FourOfAKind(cards)) return HandType.FourOfAKind;
-        if (FullHouse(cards)) return HandType.FullHouse;
-        if (ThreeOfAKind(cards)) return HandType.ThreeOfAKind;
-        if (TwoPair(cards)) return HandType.TwoPair;
-        if (OnePair(cards)) return HandType.OnePair;
+        var numberOfJokers = task == 1 ? 0 : cards.Count(c => c == 'J');
+        if (FiveOfAKind(cards, numberOfJokers)) return HandType.FiveOfAKind;
+        if (FourOfAKind(cards, numberOfJokers)) return HandType.FourOfAKind;
+        if (FullHouse(cards, numberOfJokers)) return HandType.FullHouse;
+        if (ThreeOfAKind(cards, numberOfJokers)) return HandType.ThreeOfAKind;
+        if (TwoPair(cards, numberOfJokers)) return HandType.TwoPair;
+        if (OnePair(cards, numberOfJokers)) return HandType.OnePair;
         return HandType.HighCard;
     }
 
-    private static HandType GetHandTypeWithJoker(IReadOnlyList<char> cards)
+    private static bool FiveOfAKind(IEnumerable<char> cards, int numberOfJokers = 0)
     {
-        if (FiveOfAKind(cards)) return HandType.FiveOfAKind;
-        if (FourOfAKind(cards)) return HandType.FourOfAKind;
-        if (FullHouse(cards)) return HandType.FullHouse;
-        if (ThreeOfAKind(cards)) return HandType.ThreeOfAKind;
-        if (TwoPair(cards)) return HandType.TwoPair;
-        if (OnePair(cards)) return HandType.OnePair;
-        return HandType.HighCard;
+        var differentCards = new Dictionary<char, int>();
+
+        foreach (var t in cards)
+        {
+            if (!differentCards.TryAdd(t, 1))
+            {
+                differentCards[t] += 1;
+            }
+        }
+        
+        if (numberOfJokers is > 0 and < 5)
+            differentCards.Remove('J');
+
+        var highestValue = differentCards.MaxBy(dc => dc.Value).Value;
+
+        return highestValue == 5 || highestValue + numberOfJokers == 5;
     }
 
-    private static bool FiveOfAKind(IReadOnlyList<char> cards)
+    private static bool FourOfAKind(IEnumerable<char> cards, int numberOfJokers = 0)
     {
         var differentCards = new Dictionary<char, int>();
 
@@ -169,10 +149,14 @@ public class Hand()
             }
         }
 
-        return differentCards.ContainsValue(5);
+        if (numberOfJokers > 0)
+            differentCards.Remove('J');
+        var highestValue = differentCards.MaxBy(dc => dc.Value).Value;
+
+        return highestValue + numberOfJokers == 4;
     }
 
-    private static bool FourOfAKind(IEnumerable<char> cards)
+    private static bool FullHouse(IEnumerable<char> cards, int numberOfJokers = 0)
     {
         var differentCards = new Dictionary<char, int>();
 
@@ -184,10 +168,37 @@ public class Hand()
             }
         }
 
-        return differentCards.ContainsValue(4);
+        return numberOfJokers switch
+        {
+            0 => differentCards.ContainsValue(3) && differentCards.ContainsValue(2),
+            1 => differentCards.Count == 3 && (differentCards.ContainsValue(3) || differentCards.ContainsValue(2)),
+            2 => differentCards.Count == 3 && differentCards.ContainsValue(2),
+            3 => differentCards.Count == 3 && differentCards.ContainsValue(2),
+            _ => false
+        };
     }
 
-    private static bool FullHouse(IEnumerable<char> cards)
+    private static bool ThreeOfAKind(IEnumerable<char> cards, int numberOfJokers = 0)
+    {
+        var differentCards = new Dictionary<char, int>();
+
+        foreach (var t in cards)
+        {
+            if (!differentCards.TryAdd(t, 1))
+            {
+                differentCards[t] += 1;
+            }
+        }
+        
+        if (numberOfJokers > 0)
+            differentCards.Remove('J');
+
+        var highestValue = differentCards.MaxBy(dc => dc.Value).Value;
+
+        return highestValue + numberOfJokers == 3;
+    }
+
+    private static bool TwoPair(IEnumerable<char> cards, int numberOfJokers = 0)
     {
         var differentCards = new Dictionary<char, int>();
 
@@ -199,10 +210,16 @@ public class Hand()
             }
         }
 
-        return differentCards.ContainsValue(4);
+        return numberOfJokers switch
+        {
+            0 => differentCards.Count == 3 && differentCards.ContainsValue(2),
+            1 => differentCards.Count == 4,
+            2 => differentCards.Count == 4,
+            _ => false
+        };
     }
 
-    private static bool ThreeOfAKind(IEnumerable<char> cards)
+    private static bool OnePair(IEnumerable<char> cards, int numberOfJokers = 0)
     {
         var differentCards = new Dictionary<char, int>();
 
@@ -214,37 +231,12 @@ public class Hand()
             }
         }
 
-        return differentCards.ContainsValue(3);
-    }
-
-    private static bool TwoPair(IEnumerable<char> cards)
-    {
-        var differentCards = new Dictionary<char, int>();
-
-        foreach (var t in cards)
+        return numberOfJokers switch
         {
-            if (!differentCards.TryAdd(t, 1))
-            {
-                differentCards[t] += 1;
-            }
-        }
-
-        return differentCards.Count == 3 && differentCards.ContainsValue(2);
-    }
-
-    private static bool OnePair(IEnumerable<char> cards)
-    {
-        var differentCards = new Dictionary<char, int>();
-
-        foreach (var t in cards)
-        {
-            if (!differentCards.TryAdd(t, 1))
-            {
-                differentCards[t] += 1;
-            }
-        }
-
-        return differentCards.Count == 4;
+            0 => differentCards.Count == 4,
+            1 => differentCards.Count == 5,
+            _ => false
+        };
     }
 
     public int GetCardValue(int i)
