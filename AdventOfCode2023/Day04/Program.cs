@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+var lines = File.ReadAllLines("Data.txt");
 
 First();
 Second();
@@ -8,7 +9,7 @@ void First()
 {
     var regex = new Regex(@"\d+");
     var numbersToSum = new List<int>();
-    foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day04\Data.txt"))
+    foreach (var line in lines)
     {
         var winningNumbers = regex.Matches(line.Split(": ")[1].Split(" | ")[0]);
         var rowNumbers = regex.Matches(line.Split(": ")[1].Split(" | ")[1]);
@@ -35,11 +36,11 @@ void First()
 void Second()
 {
     var regex = new Regex(@"\d+");
-    var wonCards = File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day04\Data.txt")
+    var wonCards = lines
         .Select(line => int.Parse(regex.Match(line.Split(": ")[0]).Value))
         .ToDictionary(cardNumber => cardNumber, _ => 1);
 
-    foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day04\Data.txt"))
+    foreach (var line in lines)
     {
         var cardNumber = int.Parse(regex.Match(line.Split(": ")[0]).Value);
         var quantityOfCard = wonCards[cardNumber];

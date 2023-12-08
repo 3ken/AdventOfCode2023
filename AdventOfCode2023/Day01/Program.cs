@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
+var lines = File.ReadAllLines("Data.txt");
+
 First();
 Second();
 return;
@@ -9,7 +11,7 @@ void First()
     var regex = new Regex(@"\d");
     var ints = new List<int>();
 
-    foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day01\Data.txt"))
+    foreach (var line in lines)
     {
         if (string.IsNullOrEmpty(line)) continue;
         var matches = regex.Matches(line);
@@ -24,7 +26,7 @@ void Second()
     var regex = new Regex(@"\d");
     var ints = new List<int>();
 
-    foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day01\Data.txt"))
+    foreach (var line in lines)
     {
         if (string.IsNullOrEmpty(line)) continue;
         var regexMatches = regex.Matches(line);

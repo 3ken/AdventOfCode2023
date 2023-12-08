@@ -1,4 +1,4 @@
-﻿var lines = File.ReadAllLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day05\Data.txt");
+﻿var lines = File.ReadAllLines("Data.txt");
 var seedToLocationData = GetSeedToLocationData();
 
 // First();

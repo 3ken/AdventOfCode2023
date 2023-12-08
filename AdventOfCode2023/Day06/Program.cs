@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-var lines = File.ReadAllLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day06\Data.txt");
+var lines = File.ReadAllLines("Data.txt");
 var regex = new Regex(@"\d+");
 var races = GetRacesData();
 

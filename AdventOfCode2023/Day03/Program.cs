@@ -85,7 +85,7 @@ int GetGearRatio(int rowIndex, int columnIndex)
 
 char[,] CreateCharMatrix()
 {
-    var listOfStrings = File.ReadAllLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day03\Data.txt");
+    var listOfStrings = File.ReadAllLines("Data.txt");
     var numberOfRows = listOfStrings.Length;
     var numberOfCols = listOfStrings.Max(s => s.Length);
     var charMatrix = new char[numberOfRows, numberOfCols];

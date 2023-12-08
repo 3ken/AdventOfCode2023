@@ -1,4 +1,6 @@
-﻿First();
+﻿var lines = File.ReadAllLines("Data.txt");
+
+First();
 Second();
 return;
 
@@ -11,7 +13,7 @@ void First()
         { "blue", 14 },
     };
     var possibleGameIds = new List<int>();
-    foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day02\Data.txt"))
+    foreach (var line in lines)
     {
         var gameId = int.Parse(line.Split(": ")[0].Split(' ')[1]);
         var gameSets = line.Split(": ")[1].Split("; ");
@@ -41,7 +43,7 @@ void First()
 void Second()
 {
     var powers = new List<int>();
-    foreach (var line in File.ReadLines(@"C:\Git\AdventOfCode2023\AdventOfCode2023\Day02\Data.txt"))
+    foreach (var line in lines)
     {
         var requiredDicesInGame = new Dictionary<string, int>
         {
