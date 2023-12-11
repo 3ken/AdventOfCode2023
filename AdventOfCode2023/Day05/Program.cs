@@ -27,7 +27,7 @@ void Second()
     Console.WriteLine(lowestLocationNumber);
 }
 
-List<Range> MapToDestination(List<Range> sourceRanges, Dictionary<Range,Range> Maps)
+List<Range> MapToDestination(List<Range> sourceRanges, Dictionary<Range,Range> maps)
 {
     var ranges = new Queue<Range>(sourceRanges);
     var destination = new List<Range>();
@@ -36,14 +36,14 @@ List<Range> MapToDestination(List<Range> sourceRanges, Dictionary<Range,Range> M
     {
         var range = ranges.Dequeue();
         
-        var src = Maps.Keys.FirstOrDefault(src => Intersects(src, range));
+        var src = maps.Keys.FirstOrDefault(src => Intersects(src, range));
         if (src == null)
         {
             destination.Add(range);
         }
         else if (src.Start <= range.Start && range.End <= src.End) {
-            var dst = Maps[src];
-            var shift = dst.Start - src.Start;
+            var dest = maps[src];
+            var shift = dest.Start - src.Start;
             destination.Add(new Range(range.Start + shift, range.End + shift));
         } 
         else if (range.Start < src.Start) {
